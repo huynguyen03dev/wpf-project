@@ -1,0 +1,38 @@
+﻿<Window x:Class="wpf_project.Views.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpf_project.Views"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Book Store - Login" Height="450" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <Menu Grid.Row="0">
+            <MenuItem Header="Tools">
+                <MenuItem Header="Check Database Connection" Click="CheckDatabaseConnection_Click"/>
+            </MenuItem>
+        </Menu>
+        
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="20">
+            <TextBlock Text="Book Store Login" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            
+            <TextBlock Text="Username:" Margin="0,10,0,5"/>
+            <TextBox x:Name="txtUsername" Height="30" Padding="5"/>
+            
+            <TextBlock Text="Password:" Margin="0,10,0,5"/>
+            <PasswordBox x:Name="txtPassword" Height="30" Padding="5"/>
+            
+            <Button x:Name="btnLogin" Content="Login" Height="40" Background="#007BFF" Foreground="White" Margin="0,20,0,10" Click="btnLogin_Click"/>
+            
+            <TextBlock HorizontalAlignment="Center">
+                <Hyperlink x:Name="lnkRegister" Click="lnkRegister_Click">Register New Account</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</Window>
