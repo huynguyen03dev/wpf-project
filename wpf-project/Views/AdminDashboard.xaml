@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:wpf_project.Views"
+        xmlns:converters="clr-namespace:wpf_project.Converters"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="Admin Dashboard" Height="600" Width="900">
@@ -68,20 +69,23 @@
             </TabItem>
             <TabItem Header="Orders">
                 <Grid Margin="10">
-                    <DataGrid x:Name="dgOrders" AutoGenerateColumns="False" IsReadOnly="True">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Orders Status Header -->
+                    <TextBlock Grid.Row="0" x:Name="txtOrdersStatus" Text="Loading orders..." Margin="0,0,0,10"/>
+                    
+                    <!-- Orders Grid -->
+                    <DataGrid Grid.Row="1" x:Name="dgOrders" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Order ID" Binding="{Binding Id}" Width="80"/>
                             <DataGridTextColumn Header="User ID" Binding="{Binding UserId}" Width="80"/>
                             <DataGridTextColumn Header="Order Date" Binding="{Binding OrderDate, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" Width="150"/>
                             <DataGridTextColumn Header="Total Amount" Binding="{Binding TotalAmount, StringFormat=\{0:C\}}" Width="100"/>
-                            <DataGridTemplateColumn Header="Payment Status" Width="120">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding IsPaid, Converter={StaticResource BoolToPaymentStatusConverter}}" 
-                                                   Foreground="{Binding IsPaid, Converter={StaticResource BoolToColorConverter}}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Payment Status" Width="100" 
+                                                Binding="{Binding IsPaid, Converter={StaticResource BoolToPaymentStatusConverter}}"/>
                             <DataGridTemplateColumn Width="100">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>

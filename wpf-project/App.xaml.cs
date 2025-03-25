@@ -45,19 +45,26 @@ namespace wpf_project
                     
                     try
                     {
-                        // Ensure database exists - but don't delete it!
-                        // Chỉ gọi EnsureCreatedAsync để tạo DB nếu chưa tồn tại
+                        // Ensure database exists
                         bool dbCreated = await dbContext.Database.EnsureCreatedAsync();
                         
                         if (dbCreated)
                         {
-                            // Chỉ khởi tạo dữ liệu nếu DB vừa được tạo mới
-                            // Ensure admin user and sample data
+                            // Database was just created, initialize data
                             var userService = scope.ServiceProvider.GetRequiredService<UserService>();
                             await userService.EnsureAdminCreated();
 
                             var bookService = scope.ServiceProvider.GetRequiredService<BookService>();
                             await bookService.AddSampleBooksIfEmpty();
+                        }
+                        else
+                        {
+                            // Database already exists, check if schema needs updates
+                            bool schemaUpdated = await DatabaseHelper.UpdateDatabaseSchema(dbContext);
+                            if (schemaUpdated)
+                            {
+                                System.Diagnostics.Debug.WriteLine("Database schema was updated");
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -79,8 +86,18 @@ namespace wpf_project
             // Add DbContext with explicit connection string with MARS enabled
             services.AddDbContext<BookStoreContext>(options =>
             {
-                options.UseSqlServer("Server=Huy-Nitro\\NOADB;Database=book-store-db;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;");
-            });
+                options.UseSqlServer("Server=Huy-Nitro\\NOADB;Database=book-store-db;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;",
+                    sqlServerOptions => 
+                    {
+                        // Set command timeout through the SQL Server options builder
+                        sqlServerOptions.CommandTimeout(60);
+                    });
+                
+                // Enable detailed errors for debugging
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+                
+            }, ServiceLifetime.Transient); // Use Transient to avoid shared DbContext
 
             // Add database test service
             services.AddTransient<DatabaseTestService>();

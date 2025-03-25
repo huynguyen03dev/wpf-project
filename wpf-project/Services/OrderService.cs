@@ -182,44 +182,40 @@ namespace wpf_project.Services
         {
             try
             {
-                // Log bắt đầu truy vấn
-                Console.WriteLine("Starting to load all orders");
-
-                // Đơn giản hóa truy vấn để tìm lỗi
-                var orders = await _context.Orders.ToListAsync();
-                Console.WriteLine($"Loaded {orders.Count} orders");
-
-                // Thêm debug để xem dữ liệu
+                // Cách tiếp cận đơn giản nhất - sử dụng một truy vấn duy nhất với Include
+                var orders = await _context.Orders
+                    .Include(o => o.Items)
+                        .ThenInclude(i => i.Book)
+                    .AsNoTracking()
+                    .ToListAsync();
+                    
+                System.Diagnostics.Debug.WriteLine($"OrderService: Successfully loaded {orders.Count} orders");
+                
+                // In thông tin orders để debug
                 foreach (var order in orders)
                 {
-                    Console.WriteLine($"Order ID: {order.Id}, UserID: {order.UserId}, Amount: {order.TotalAmount}, IsPaid: {order.IsPaid}");
+                    System.Diagnostics.Debug.WriteLine($"Order ID: {order.Id}, Date: {order.OrderDate}, Items: {order.Items?.Count ?? 0}");
                 }
-
-                // Tải OrderItems cho mỗi Order
-                foreach (var order in orders)
-                {
-                    var items = await _context.OrderItems
-                        .Where(oi => oi.OrderId == order.Id)
-                        .ToListAsync();
-                    Console.WriteLine($"Loaded {items.Count} items for order {order.Id}");
-
-                    // Tải Book cho mỗi OrderItem
-                    foreach (var item in items)
-                    {
-                        item.Book = await _context.Books
-                            .FirstOrDefaultAsync(b => b.Id == item.BookId);
-                    }
-
-                    order.Items = items;
-                }
-
+                
                 return orders;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in GetAllOrders: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Error getting all orders: {ex.Message}");
-                return new List<Order>();
+                System.Diagnostics.Debug.WriteLine($"ERROR in GetAllOrders: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                // Thử lại với cách tiếp cận khác trong trường hợp Include không hoạt động
+                try
+                {
+                    var orders = await _context.Orders.AsNoTracking().ToListAsync();
+                    System.Diagnostics.Debug.WriteLine($"Fallback: Loaded {orders.Count} orders (without items)");
+                    return orders;
+                }
+                catch (Exception fallbackEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"FALLBACK ERROR: {fallbackEx.Message}");
+                    return new List<Order>();
+                }
             }
         }
     }

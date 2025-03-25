@@ -52,25 +52,57 @@ namespace wpf_project.Views
         {
             try
             {
-                // Xử lý trực tiếp trên UI thread để tìm lỗi
-                List<Order> orders = await _orderService.GetAllOrders();
+                txtOrdersStatus.Text = "Loading orders...";
+                
+                // Load orders trong một scope riêng biệt
+                List<Order> orders = null;
+                
+                try
+                {
+                    // Sử dụng Task.Run để đảm bảo truy vấn chạy trên thread riêng biệt
+                    orders = await Task.Run(async () => await _orderService.GetAllOrders());
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Exception getting orders: {ex.Message}");
+                    orders = new List<Order>();
+                }
                 
                 // Debug output
-                Console.WriteLine($"Loaded {orders?.Count ?? 0} orders for admin dashboard");
+                System.Diagnostics.Debug.WriteLine($"AdminDashboard: Received {orders?.Count ?? 0} orders from service");
                 
                 if (orders != null && orders.Any())
                 {
-                    dgOrders.ItemsSource = orders;
+                    // Đảm bảo không có null references
+                    foreach (var order in orders)
+                    {
+                        if (order.Items == null)
+                            order.Items = new List<OrderItem>();
+                    }
+                    
+                    // Hiển thị thông tin orders
+                    txtOrdersStatus.Text = $"Found {orders.Count} orders.";
+                    
+                    // Cập nhật UI thông qua dispatcher để tránh thread conflicts
+                    this.Dispatcher.Invoke(() => {
+                        dgOrders.ItemsSource = null;
+                        dgOrders.ItemsSource = orders;
+                    });
                 }
                 else
                 {
-                    Console.WriteLine("No orders found or orders list is null");
-                    dgOrders.ItemsSource = new List<Order>(); // Set empty list to avoid null reference
+                    txtOrdersStatus.Text = "No orders found in database.";
+                    dgOrders.ItemsSource = new List<Order>();
+                    
+                    // Hiển thị thông tin debug bổ sung
+                    System.Diagnostics.Debug.WriteLine("No orders to display or empty orders list returned");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception in LoadOrdersAsync: {ex.Message}");
+                txtOrdersStatus.Text = $"Error: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"ERROR in LoadOrdersAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 MessageBox.Show($"Error loading orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

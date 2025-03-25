@@ -9,6 +9,9 @@ namespace wpf_project.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        
+        // Schema version to detect model changes
+        public static readonly int SchemaVersion = 2; // Increment this when models change
 
         public BookStoreContext(DbContextOptions<BookStoreContext> options) : base(options)
         {
@@ -45,6 +48,22 @@ namespace wpf_project.Data
                 .HasKey(o => o.Id);
             modelBuilder.Entity<Order>()
                 .ToTable("Orders");
+            
+            // Ensure new columns are properly configured
+            modelBuilder.Entity<Order>()
+                .Property(o => o.IsPaid)
+                .HasDefaultValue(false);
+                
+            modelBuilder.Entity<Order>()
+                .Property(o => o.PaymentDate)
+                .IsRequired(false);
+            
+            // Order có nhiều OrderItem
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.Items)
+                .WithOne(oi => oi.Order)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Configure OrderItem entity
             modelBuilder.Entity<OrderItem>()
@@ -52,15 +71,12 @@ namespace wpf_project.Data
             modelBuilder.Entity<OrderItem>()
                 .ToTable("OrderItems");
 
-            modelBuilder.Entity<OrderItem>()
-                .HasOne(oi => oi.Order)
-                .WithMany(o => o.Items)
-                .HasForeignKey(oi => oi.OrderId);
-
+            // Quan hệ OrderItem với Book
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Book)
                 .WithMany()
-                .HasForeignKey(oi => oi.BookId);
+                .HasForeignKey(oi => oi.BookId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
