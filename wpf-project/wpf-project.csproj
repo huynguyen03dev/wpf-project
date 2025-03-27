@@ -19,4 +19,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
   </ItemGroup>
 
+  <!-- Remove the explicit inclusion of Converters folder since they're included by default -->
+  
 </Project>

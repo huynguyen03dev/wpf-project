@@ -15,18 +15,18 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Background="#343A40" Grid.Row="0">
+        <Grid Background="{StaticResource PrimaryDarkBrush}" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Admin Dashboard" FontSize="22" FontWeight="Bold" Foreground="White" Margin="20,15" Grid.Column="0"/>
-            <Button x:Name="btnLogout" Content="Logout" Background="Transparent" Foreground="White" BorderBrush="White" Margin="10" Padding="10,5" Grid.Column="1" Click="btnLogout_Click"/>
+            <Button x:Name="btnLogout" Content="Logout" Style="{StaticResource OutlineButton}" Foreground="White" BorderBrush="White" Margin="10" Padding="10,5" Grid.Column="1" Click="btnLogout_Click"/>
         </Grid>
 
         <!-- Main content -->
-        <TabControl Grid.Row="1" Margin="10">
+        <TabControl Grid.Row="1" Margin="10" Background="{StaticResource BackgroundBrush}">
             <TabItem Header="Books">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
@@ -36,12 +36,12 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button x:Name="btnAddBook" Content="Add New Book" Padding="15,5" Margin="0,0,10,0" Click="btnAddBook_Click"/>
+                        <Button x:Name="btnAddBook" Content="Add New Book" Style="{StaticResource PrimaryButton}" Padding="15,5" Margin="0,0,10,0" Click="btnAddBook_Click"/>
                         <TextBox x:Name="txtSearchBooks" Width="200" Margin="10,0" Padding="5" VerticalContentAlignment="Center"/>
-                        <Button x:Name="btnSearchBooks" Content="Search" Padding="15,5" Click="btnSearchBooks_Click"/>
+                        <Button x:Name="btnSearchBooks" Content="Search" Style="{StaticResource PrimaryButton}" Padding="15,5" Click="btnSearchBooks_Click"/>
                     </StackPanel>
 
-                    <DataGrid x:Name="dgBooks" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                    <DataGrid x:Name="dgBooks" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                             <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
@@ -52,14 +52,14 @@
                             <DataGridTemplateColumn Width="100">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="Edit" Click="btnEditBook_Click"/>
+                                        <Button Content="Edit" Style="{StaticResource OutlineButton}" Click="btnEditBook_Click"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Width="100">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="Delete" Click="btnDeleteBook_Click"/>
+                                        <Button Content="Delete" Style="{StaticResource DangerButton}" Click="btnDeleteBook_Click"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -78,7 +78,7 @@
                     <TextBlock Grid.Row="0" x:Name="txtOrdersStatus" Text="Loading orders..." Margin="0,0,0,10"/>
                     
                     <!-- Orders Grid -->
-                    <DataGrid Grid.Row="1" x:Name="dgOrders" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid Grid.Row="1" x:Name="dgOrders" AutoGenerateColumns="False" IsReadOnly="True" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Order ID" Binding="{Binding Id}" Width="80"/>
                             <DataGridTextColumn Header="User ID" Binding="{Binding UserId}" Width="80"/>
@@ -89,7 +89,7 @@
                             <DataGridTemplateColumn Width="100">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="View Details" Click="btnViewOrderDetails_Click"/>
+                                        <Button Content="View Details" Style="{StaticResource PrimaryButton}" Click="btnViewOrderDetails_Click"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

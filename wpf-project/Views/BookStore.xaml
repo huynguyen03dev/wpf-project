@@ -6,7 +6,108 @@
         xmlns:local="clr-namespace:wpf_project.Views"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Book Store" Height="600" Width="900">
+        Title="Book Store" Height="700" Width="1000"
+        Background="#F5F5F5">
+    <Window.Resources>
+        <!-- Card style for books -->
+        <Style x:Key="BookCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="1" BlurRadius="5" Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Effect.ShadowDepth" To="3" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="Effect.BlurRadius" To="10" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="Effect.Opacity" To="0.3" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Effect.ShadowDepth" To="1" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="Effect.BlurRadius" To="5" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="Effect.Opacity" To="0.2" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Style for buttons -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#007BFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#0069D9"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- Style for search box -->
+        <Style x:Key="ModernSearchBox" TargetType="TextBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Padding" Value="30,5,5,5"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <Grid>
+                                <TextBox Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         VerticalContentAlignment="Center"
+                                         Padding="{TemplateBinding Padding}"
+                                         Foreground="{TemplateBinding Foreground}"/>
+                                <Path Data="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                                      Fill="#777777"
+                                      Width="16"
+                                      Height="16"
+                                      Stretch="Uniform"
+                                      HorizontalAlignment="Left"
+                                      Margin="10,0,0,0"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,58 +115,241 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Background="#007BFF" Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock Text="Book Store" FontSize="22" FontWeight="Bold" Foreground="White" Margin="20,15" Grid.Column="0"/>
-
-            <TextBlock x:Name="txtWelcome" Text="Welcome, User" FontSize="14" Foreground="White" VerticalAlignment="Center" Grid.Column="1" Margin="10,0"/>
+        <Grid Background="{StaticResource PrimaryBrush}" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             
-            <Button x:Name="btnViewCart" Content="View Cart" Background="Transparent" Foreground="White" BorderBrush="White" Margin="10" Padding="10,5" Grid.Column="2" Click="btnViewCart_Click"/>
+            <!-- Top Bar -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Book Store" FontSize="24" FontWeight="Bold" Foreground="White" Margin="20,15" Grid.Column="0"/>
+
+                <!-- Search Bar -->
+                <Grid Grid.Column="1" Margin="20,10" MaxWidth="400" VerticalAlignment="Center">
+                    <TextBox x:Name="txtSearch" Style="{StaticResource ModernSearchBox}" 
+                             KeyUp="txtSearch_KeyUp" FontSize="14" 
+                             Background="#3066BE" Foreground="White" BorderThickness="0" />
+                    <TextBlock IsHitTestVisible="False" Text="Search books..." 
+                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="30,0,0,0" 
+                               Foreground="#CCFFFFFF" FontSize="14">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=txtSearch}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <TextBlock x:Name="txtWelcome" Text="Welcome, User" FontSize="14" Foreground="White" 
+                           VerticalAlignment="Center" Grid.Column="2" Margin="10,0"/>
+                
+                <StackPanel Orientation="Horizontal" Grid.Column="3">
+                    <Button x:Name="btnViewCart" Content="View Cart" Style="{StaticResource OutlineButton}"
+                            Foreground="White" BorderBrush="White" 
+                            Margin="10" Padding="12,6" Click="btnViewCart_Click"
+                            ToolTip="View your shopping cart"/>
+                    
+                    <Button x:Name="btnLogout" Content="Logout" Style="{StaticResource OutlineButton}"
+                            Foreground="White" BorderBrush="White"
+                            Margin="0,10,20,10" Padding="12,6" Click="btnLogout_Click"
+                            ToolTip="Log out of your account"/>
+                </StackPanel>
+            </Grid>
+            
+            <!-- Filter Pills -->
+            <Border Grid.Row="1" Background="{StaticResource PrimaryDarkBrush}" Padding="10">
+                <WrapPanel>
+                    <TextBlock Text="Quick Filters:" Foreground="White" VerticalAlignment="Center" Margin="10,0" FontWeight="SemiBold"/>
+                    
+                    <Button Content="All Books" Margin="5" Padding="10,5" Click="QuickFilter_Click" Tag="All" Background="#80FFFFFF" Foreground="White" BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="15"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    
+                    <Button Content="Fiction" Margin="5" Padding="10,5" Click="QuickFilter_Click" Tag="Fiction" Background="#40FFFFFF" Foreground="White" BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="15"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    
+                    <Button Content="Programming" Margin="5" Padding="10,5" Click="QuickFilter_Click" Tag="Programming" Background="#40FFFFFF" Foreground="White" BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="15"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    
+                    <Button Content="Bestsellers" Margin="5" Padding="10,5" Click="QuickFilter_Click" Tag="Bestsellers" Background="#40FFFFFF" Foreground="White" BorderThickness="0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="15"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </WrapPanel>
+            </Border>
         </Grid>
 
         <!-- Main content -->
-        <Grid Grid.Row="1" Margin="20">
+        <Grid Grid.Row="1" Background="{StaticResource BackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Filter panel -->
-            <StackPanel Grid.Column="0" Margin="0,0,20,0">
-                <TextBlock Text="Filters" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
-                
-                <TextBlock Text="Genre:" Margin="0,10,0,5"/>
-                <ComboBox x:Name="cmbGenre" SelectionChanged="cmbGenre_SelectionChanged"/>
-                
-                <TextBlock Text="Price Range:" Margin="0,20,0,5"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox x:Name="txtMinPrice" Width="80" Margin="0,0,10,0" TextChanged="PriceFilter_TextChanged"/>
-                    <TextBlock Text="to" VerticalAlignment="Center"/>
-                    <TextBox x:Name="txtMaxPrice" Width="80" Margin="10,0,0,0" TextChanged="PriceFilter_TextChanged"/>
-                </StackPanel>
-                
-                <Button x:Name="btnClearFilters" Content="Clear Filters" Margin="0,20,0,0" Click="btnClearFilters_Click"/>
-                
-                <Button x:Name="btnLogout" Content="Logout" Margin="0,50,0,0" Click="btnLogout_Click"/>
-            </StackPanel>
+            <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" Margin="10" CornerRadius="8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="15">
+                        <TextBlock Text="Advanced Filters" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
+                        
+                        <Expander Header="Genre" IsExpanded="True" Margin="0,0,0,10">
+                            <StackPanel Margin="0,10,0,0">
+                                <ComboBox x:Name="cmbGenre" SelectionChanged="cmbGenre_SelectionChanged" Padding="8,5"/>
+                            </StackPanel>
+                        </Expander>
+                        
+                        <Expander Header="Price Range" IsExpanded="True" Margin="0,0,0,10">
+                            <StackPanel Margin="0,10,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="txtMinPrice" Grid.Column="0" Padding="8,5" TextChanged="PriceFilter_TextChanged"/>
+                                    <TextBlock Text="to" Grid.Column="1" VerticalAlignment="Center" Margin="10,0"/>
+                                    <TextBox x:Name="txtMaxPrice" Grid.Column="2" Padding="8,5" TextChanged="PriceFilter_TextChanged"/>
+                                </Grid>
+                                <Slider x:Name="sliderPrice" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" 
+                                        IsSnapToTickEnabled="True" TickFrequency="5" TickPlacement="BottomRight"
+                                        Margin="0,15,0,0" ValueChanged="sliderPrice_ValueChanged"/>
+                                <TextBlock x:Name="txtPriceRange" Text="$0 - $100" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Expander>
+                        
+                        <Expander Header="Availability" IsExpanded="True" Margin="0,0,0,10">
+                            <StackPanel Margin="0,10,0,0">
+                                <CheckBox x:Name="chkInStock" Content="In Stock Only" IsChecked="False" Checked="chkInStock_CheckedChanged" Unchecked="chkInStock_CheckedChanged"/>
+                            </StackPanel>
+                        </Expander>
+                        
+                        <Button x:Name="btnClearFilters" Content="Clear All Filters" Margin="0,20,0,0" 
+                                Style="{StaticResource PrimaryButton}" Click="btnClearFilters_Click"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
 
-            <!-- Book list -->
-            <ListView x:Name="lstBooks" Grid.Column="1" MouseDoubleClick="lstBooks_MouseDoubleClick">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" Width="200"/>
-                        <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}" Width="150"/>
-                        <GridViewColumn Header="Genre" DisplayMemberBinding="{Binding Genre}" Width="100"/>
-                        <GridViewColumn Header="Price" DisplayMemberBinding="{Binding Price, StringFormat=\{0:C\}}" Width="70"/>
-                        <GridViewColumn Header="In Stock" DisplayMemberBinding="{Binding StockQuantity}" Width="70"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <!-- Book display area -->
+            <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}" Margin="0,10,10,10" CornerRadius="8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Results header -->
+                    <Grid Grid.Row="0" Margin="20,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock x:Name="txtResultCount" Text="Showing all books" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        
+                        <ComboBox x:Name="cmbSort" Grid.Column="1" Width="150" SelectedIndex="0" SelectionChanged="cmbSort_SelectionChanged">
+                            <ComboBoxItem Content="Default Sorting"/>
+                            <ComboBoxItem Content="Price: Low to High"/>
+                            <ComboBoxItem Content="Price: High to Low"/>
+                            <ComboBoxItem Content="Title: A to Z"/>
+                        </ComboBox>
+                    </Grid>
+                    
+                    <!-- No results message -->
+                    <TextBlock x:Name="txtNoResults" Text="No books found matching your criteria" 
+                               Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                               FontSize="16" Foreground="#666" Visibility="Collapsed"/>
+                    
+                    <!-- Books grid -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="booksItemsControl" Margin="10">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource BookCardStyle}" Width="200" Height="300" MouseLeftButtonUp="Book_Click" Cursor="Hand">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="160"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            
+                                            <!-- Book Cover -->
+                                            <Border Grid.Row="0" Background="#F0F0F0" CornerRadius="8,8,0,0">
+                                                <TextBlock Text="{Binding Title}" Margin="10" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            
+                                            <!-- Book Info -->
+                                            <StackPanel Grid.Row="1" Margin="12">
+                                                <TextBlock Text="{Binding Title}" FontWeight="Bold" TextWrapping="Wrap" MaxHeight="40"/>
+                                                <TextBlock Text="{Binding Author}" Foreground="#666" Margin="0,5,0,0"/>
+                                                <Grid Margin="0,10,0,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Price, StringFormat=\{0:C\}}" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                                                    <Border Grid.Column="1" Background="#E8F4FF" CornerRadius="4" Padding="5,2">
+                                                        <TextBlock Text="{Binding StockQuantity, StringFormat=\{0\} in stock}" FontSize="10" Foreground="#007BFF"/>
+                                                    </Border>
+                                                </Grid>
+                                            </StackPanel>
+                                            
+                                            <!-- Out of stock overlay - Simplified approach without converter -->
+                                            <Border Grid.RowSpan="2" Background="#80FFFFFF">
+                                                <TextBlock Text="OUT OF STOCK" FontWeight="Bold" Foreground="{StaticResource DangerBrush}" 
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding StockQuantity}" Value="0">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </Window>

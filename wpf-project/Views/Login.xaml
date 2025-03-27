@@ -20,18 +20,27 @@
         </Menu>
         
         <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="20">
-            <TextBlock Text="Book Store Login" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            <TextBlock Text="Book Store Login" FontSize="24" FontWeight="Bold" 
+                      Foreground="{StaticResource TextPrimaryBrush}"
+                      HorizontalAlignment="Center" Margin="0,0,0,20"/>
             
-            <TextBlock Text="Username:" Margin="0,10,0,5"/>
-            <TextBox x:Name="txtUsername" Height="30" Padding="5"/>
+            <TextBlock Text="Username:" Margin="0,10,0,5" 
+                      Foreground="{StaticResource TextPrimaryBrush}"/>
+            <TextBox x:Name="txtUsername" Height="30" Padding="5" 
+                    BorderBrush="{StaticResource BorderBrush}"/>
             
-            <TextBlock Text="Password:" Margin="0,10,0,5"/>
-            <PasswordBox x:Name="txtPassword" Height="30" Padding="5"/>
+            <TextBlock Text="Password:" Margin="0,10,0,5" 
+                      Foreground="{StaticResource TextPrimaryBrush}"/>
+            <PasswordBox x:Name="txtPassword" Height="30" Padding="5" 
+                        BorderBrush="{StaticResource BorderBrush}"/>
             
-            <Button x:Name="btnLogin" Content="Login" Height="40" Background="#007BFF" Foreground="White" Margin="0,20,0,10" Click="btnLogin_Click"/>
+            <Button x:Name="btnLogin" Content="Login" Height="40" 
+                   Style="{StaticResource PrimaryButton}"
+                   Margin="0,20,0,10" Click="btnLogin_Click"/>
             
             <TextBlock HorizontalAlignment="Center">
-                <Hyperlink x:Name="lnkRegister" Click="lnkRegister_Click">Register New Account</Hyperlink>
+                <Hyperlink x:Name="lnkRegister" Foreground="{StaticResource PrimaryBrush}" 
+                          Click="lnkRegister_Click">Register New Account</Hyperlink>
             </TextBlock>
         </StackPanel>
     </Grid>
