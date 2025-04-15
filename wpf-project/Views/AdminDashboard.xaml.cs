@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace wpf_project.Views
     {
         private readonly BookService _bookService;
         private readonly OrderService _orderService;
+        private readonly UserService _userService;
 
         public AdminDashboard()
         {
@@ -23,9 +25,10 @@ namespace wpf_project.Views
             {
                 _bookService = ((App)Application.Current).GetService<BookService>();
                 _orderService = ((App)Application.Current).GetService<OrderService>();
-
+                _userService = ((App)Application.Current).GetService<UserService>(); // 
                 LoadBooksAsync();
                 LoadOrdersAsync();
+                LoadUsersAsync();
             }
             catch (Exception ex)
             {
@@ -197,5 +200,148 @@ namespace wpf_project.Views
                 MessageBox.Show("Please select an order to view details.", "Selection Required", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
+        // Thêm phương thức LoadUsersAsync
+        private async void LoadUsersAsync()
+        {
+            try
+            {
+                txtUsersStatus.Text = "Loading users...";
+                
+                var users = await _userService.GetAllUsers();
+                
+                if (users != null && users.Any())
+                {
+                    txtUsersStatus.Text = $"Found {users.Count} users.";
+                    
+                    this.Dispatcher.Invoke(() => {
+                        dgUsers.ItemsSource = null;
+                        dgUsers.ItemsSource = users;
+                    });
+                }
+                else
+                {
+                    txtUsersStatus.Text = "No users found.";
+                    dgUsers.ItemsSource = new List<User>();
+                }
+            }
+            catch (Exception ex)
+            {
+                txtUsersStatus.Text = $"Error: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"ERROR in LoadUsersAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                MessageBox.Show($"Error loading users: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Thêm phương thức btnDeleteUser_Click
+        private async void btnDeleteUser_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is User user)
+            {
+                // Kiểm tra nếu đang xoá tài khoản của mình
+                if (user.Id == ((App)Application.Current).CurrentUser.Id)
+                {
+                    MessageBox.Show("You cannot delete your own account.", 
+                        "Operation Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                
+                MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete user \"{user.Username}\"?", 
+                    "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        await _userService.DeleteUser(user.Id);
+                        MessageBox.Show($"User \"{user.Username}\" deleted successfully.", 
+                            "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        LoadUsersAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error deleting user: {ex.Message}", 
+                            "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+        // Thêm phương thức btnToggleAdmin_Click
+        private async void btnToggleAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is User user)
+            {
+                // Không cho phép bỏ quyền admin của chính mình
+                if (user.Id == ((App)Application.Current).CurrentUser.Id && user.IsAdmin)
+                {
+                    MessageBox.Show("You cannot remove admin rights from your own account.", 
+                        "Operation Not Allowed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                
+                try
+                {
+                    // Toggle trạng thái IsAdmin
+                    user.IsAdmin = !user.IsAdmin;
+                    await _userService.UpdateUser(user);
+                    
+                    string statusText = user.IsAdmin ? "granted" : "removed";
+                    MessageBox.Show($"Admin privileges {statusText} for user \"{user.Username}\".", 
+                        "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadUsersAsync();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error updating user: {ex.Message}", 
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        // Thêm phương thức btnRefreshUsers_Click
+        private void btnRefreshUsers_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUsersAsync();
+        }
+
+        private void adminTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            // Kiểm tra tab được chọn
+            //if (adminTabControl.SelectedItem is TabItem selectedTab) {
+            //    // Nếu chuyển sang tab Users, tải dữ liệu users
+            //    if (selectedTab == usersTab) {
+            //        LoadUsersAsync();
+            //    }
+            //    // Có thể thêm các tab khác nếu cần
+            //    else if (selectedTab.Header.ToString() == "Orders") {
+            //        LoadOrdersAsync();
+            //    } else if (selectedTab.Header.ToString() == "Books") {
+            //        LoadBooksAsync();
+            //    }
+            //}
+        }
+
+        private void btnEditUser_Click(object sender, RoutedEventArgs e) {
+            if (sender is Button button && button.DataContext is User selectedUser) {
+                try {
+                    // Tạo cửa sổ EditUser và truyền thông tin người dùng được chọn
+                    EditUser editUserWindow = new EditUser(_userService, selectedUser);
+
+                    // Hiển thị cửa sổ dưới dạng dialog
+                    bool? result = editUserWindow.ShowDialog();
+
+                    // Nếu đã cập nhật thành công (DialogResult = true), làm mới danh sách
+                    if (result == true) {
+                        // Làm mới danh sách người dùng
+                        LoadUsersAsync();
+                    }
+                } catch (Exception ex) {
+                    MessageBox.Show($"Error opening user editor: {ex.Message}",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
     }
 }

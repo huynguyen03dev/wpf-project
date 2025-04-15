@@ -12,6 +12,7 @@ namespace wpf_project.Views
     public partial class BookStore : Window
     {
         private readonly BookService _bookService;
+        private readonly UserService _userService; // Thêm UserService
         private readonly User _currentUser;
         private List<Book> _allBooks = new List<Book>(); // Initialize with empty list
         private List<Book> _filteredBooks = new List<Book>(); // Initialize with empty list
@@ -23,9 +24,13 @@ namespace wpf_project.Views
             
             // Set up service references
             _bookService = ((App)Application.Current).GetService<BookService>();
+            _userService = ((App)Application.Current).GetService<UserService>(); // Thêm UserService
             _currentUser = ((App)Application.Current).CurrentUser;
             
             txtWelcome.Text = $"Welcome, {_currentUser?.Username ?? "User"}";
+            
+            // Thêm event handler cho việc nhấp vào tên người dùng
+            txtWelcome.MouseLeftButtonUp += txtWelcome_MouseLeftButtonUp;
             
             // Initialize default sorting
             cmbSort.SelectedIndex = 0;
@@ -286,6 +291,27 @@ namespace wpf_project.Views
             Login login = new Login();
             login.Show();
             this.Close();
+        }
+
+        // Xử lý sự kiện khi người dùng nhấn vào tên người dùng
+        private void txtWelcome_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                // Mở cửa sổ EditUser ở chế độ chỉ thay đổi mật khẩu
+                EditUser editUserWindow = new EditUser(_userService, _currentUser, true);
+                
+                // Hiển thị cửa sổ dưới dạng dialog
+                bool? result = editUserWindow.ShowDialog();
+                
+                // Không cần làm gì thêm khi đóng dialog vì thông tin người dùng
+                // đã được cập nhật trong cơ sở dữ liệu
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating user: {ex.Message}", 
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

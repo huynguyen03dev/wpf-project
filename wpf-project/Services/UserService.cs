@@ -72,7 +72,7 @@ namespace wpf_project.Services
                 await EnsureDatabaseTablesExist();
 
                 var adminUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Username.ToLower() == "admin");
+                    .FirstOrDefaultAsync(u => u.IsAdmin == true);
                     
                 if (adminUser == null)
                 {
@@ -103,6 +103,77 @@ namespace wpf_project.Services
                     builder.Append(bytes[i].ToString("x2"));
                 }
                 return builder.ToString();
+            }
+        }
+
+        public async Task<User> GetUserById(int userId) {
+            try {
+                return await _context.Users.FindAsync(userId);
+            } catch (Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error getting user by ID: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<List<User>> GetAllUsers()
+        {
+            try
+            {
+                return await _context.Users.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting all users: {ex.Message}");
+                return new List<User>();
+            }
+        }
+
+        public async Task<bool> DeleteUser(int userId)
+        {
+            try
+            {
+                var user = await _context.Users.FindAsync(userId);
+                if (user != null)
+                {
+                    // Kiểm tra xem user có đơn hàng hay không
+                    var hasOrders = await _context.Orders.AnyAsync(o => o.UserId == userId);
+                    if (hasOrders)
+                    {
+                        throw new InvalidOperationException("Cannot delete user with existing orders.");
+                    }
+
+                    _context.Users.Remove(user);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error deleting user: {ex.Message}");
+                throw;
+            }
+        }
+
+        // Thêm phương thức UpdateUser
+        public async Task<bool> UpdateUser(User user)
+        {
+            try
+            {
+                // Chỉ cập nhật các thuộc tính cần thiết
+                var existingUser = await _context.Users.FindAsync(user.Id);
+                if (existingUser == null)
+                    return false;
+                    
+                existingUser.IsAdmin = user.IsAdmin;
+                // Không cập nhật password vì nó đã được mã hoá
+                
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating user: {ex.Message}");
+                throw;
             }
         }
     }

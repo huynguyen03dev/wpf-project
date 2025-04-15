@@ -22,11 +22,11 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Admin Dashboard" FontSize="22" FontWeight="Bold" Foreground="White" Margin="20,15" Grid.Column="0"/>
-            <Button x:Name="btnLogout" Content="Logout" Style="{StaticResource OutlineButton}" Foreground="White" BorderBrush="White" Margin="10" Padding="10,5" Grid.Column="1" Click="btnLogout_Click"/>
+            <Button x:Name="btnLogout" Content="Logout" Style="{StaticResource OutlineButton}" Foreground="White" BorderBrush="White" Margin="834,15,10,10" Padding="10,5" Click="btnLogout_Click"/>
         </Grid>
 
         <!-- Main content -->
-        <TabControl Grid.Row="1" Margin="10" Background="{StaticResource BackgroundBrush}">
+        <TabControl x:Name="adminTabControl" Grid.Row="1" Margin="10" Background="{StaticResource BackgroundBrush}" SelectionChanged="adminTabControl_SelectionChanged">
             <TabItem Header="Books">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
@@ -73,10 +73,10 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
+
                     <!-- Orders Status Header -->
                     <TextBlock Grid.Row="0" x:Name="txtOrdersStatus" Text="Loading orders..." Margin="0,0,0,10"/>
-                    
+
                     <!-- Orders Grid -->
                     <DataGrid Grid.Row="1" x:Name="dgOrders" AutoGenerateColumns="False" IsReadOnly="True" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}">
                         <DataGrid.Columns>
@@ -90,6 +90,56 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Content="View Details" Style="{StaticResource PrimaryButton}" Click="btnViewOrderDetails_Click"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="usersTab" Header="Users">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Users Status Header -->
+                    <TextBlock Grid.Row="0" x:Name="txtUsersStatus" Text="Loading users..." Margin="0,0,0,10"/>
+
+                    <!-- Users Grid -->
+                    <DataGrid Grid.Row="1" x:Name="dgUsers" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single"
+          Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                            <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="150"/>
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
+                            <DataGridCheckBoxColumn Header="Is Admin" Binding="{Binding IsAdmin}" Width="80" IsReadOnly="True"/>
+
+                            <DataGridTemplateColumn Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Edit" Style="{StaticResource OutlineButton}" 
+                                Click="btnEditUser_Click" Padding="8,3"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Toggle Admin" Style="{StaticResource PrimaryButton}" 
+                                Click="btnToggleAdmin_Click" Padding="8,3"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Delete" Style="{StaticResource DangerButton}" 
+                                Click="btnDeleteUser_Click" Padding="8,3"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
