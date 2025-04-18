@@ -86,7 +86,7 @@ namespace wpf_project
             // Add DbContext with explicit connection string with MARS enabled
             services.AddDbContext<BookStoreContext>(options =>
             {
-                options.UseSqlServer("Server=Huy-Nitro\\NOADB;Database=book-store-db;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;",
+                options.UseSqlServer("Server=A6-702-26\\MISASME2023;Database=book-store-db;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;",
                     sqlServerOptions => 
                     {
                         // Set command timeout through the SQL Server options builder

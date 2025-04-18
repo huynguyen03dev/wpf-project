@@ -22,6 +22,9 @@ namespace wpf_project.Models
         public bool IsAdmin { get; set; }
         
         public DateTime CreatedAt { get; set; }
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+
 
         // Navigation property
         public virtual ICollection<Order> Orders { get; set; }

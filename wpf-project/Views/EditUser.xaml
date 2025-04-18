@@ -26,6 +26,14 @@
                 <TextBlock Text="Email:" Margin="0,10,0,5"/>
                 <TextBox x:Name="txtEmail" Height="30" Padding="5"/>
 
+                <!-- Address -->
+                <TextBlock Text="Address:" Margin="0,10,0,5"/>
+                <TextBox x:Name="txtAddress" Height="30" Padding="5"/>
+
+                <!-- Phone Number -->
+                <TextBlock Text="Phone Number:" Margin="0,10,0,5"/>
+                <TextBox x:Name="txtPhoneNumber" Height="30" Padding="5"/>
+
                 <TextBlock Text="Password (leave blank to keep current):" Margin="0,10,0,5"/>
                 <PasswordBox x:Name="txtPassword" Height="30" Padding="5"/>
 

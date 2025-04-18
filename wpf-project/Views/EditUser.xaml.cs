@@ -29,6 +29,9 @@ namespace wpf_project.Views
             txtUsername.Text = _currentUser.Username;
             txtEmail.Text = _currentUser.Email;
             chkIsAdmin.IsChecked = _currentUser.IsAdmin;
+            txtAddress.Text = _currentUser.Address;
+            txtPhoneNumber.Text = _currentUser.PhoneNumber;
+
         }
 
         private void ConfigureUIForMode()
@@ -70,7 +73,8 @@ namespace wpf_project.Views
                         Username = _currentUser.Username,
                         Email = _currentUser.Email,
                         IsAdmin = _currentUser.IsAdmin,
-                        PasswordHash = _userService.HashPassword(txtPassword.Password)
+                        PasswordHash = _userService.HashPassword(txtPassword.Password),
+
                     };
                     
                     bool success = await UpdatePasswordOnly(updatedUser);
@@ -95,6 +99,9 @@ namespace wpf_project.Views
             {
                 _currentUser.Email = txtEmail.Text;
                 _currentUser.IsAdmin = chkIsAdmin.IsChecked ?? false;
+                _currentUser.Address = txtAddress.Text;
+                _currentUser.PhoneNumber = txtPhoneNumber.Text;
+
 
                 if (!string.IsNullOrEmpty(txtPassword.Password))
                 {
